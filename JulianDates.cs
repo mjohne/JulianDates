@@ -1,4 +1,4 @@
-namespace Planetoid_DB.Helpers;
+namespace JulianDates;
 
 /// <summary>Provides calculations and conversions for Julian dates and related date and time systems.</summary>
 /// <remarks>Supports Julian Date, Modified Julian Date, Reduced Julian Date, and other related formats, including conversions to and from civil calendar dates and Unix time. Chronological date calculations use the local time zone.</remarks>
@@ -468,7 +468,7 @@ internal static class JulianDates
 	/// <returns>Current Mars Sol Date.</returns>
 	public static double CalculateMarsSolDate()
 	{
-		return CalculateMarsSolDate(CalculateJulianDate(), 37.0);
+		return CalculateMarsSolDate(julianDateUtc: CalculateJulianDate(), taiMinusUtcSeconds: 37.0);
 	}
 
 	/// <summary>Calculates Mars Sol Date for a civil date, treating the input as UTC and applying the current TAI-UTC offset.</summary>
@@ -477,7 +477,7 @@ internal static class JulianDates
 	/// <returns>Mars Sol Date.</returns>
 	public static double CalculateMarsSolDate(DateTime date)
 	{
-		return CalculateMarsSolDate(CalculateJulianDate(date), 37.0);
+		return CalculateMarsSolDate(julianDateUtc: CalculateJulianDate(date: date), taiMinusUtcSeconds: 37.0);
 	}
 
 	/// <summary>Calculates Mars Sol Date from a TT Julian Date.</summary>
@@ -601,67 +601,96 @@ internal static class JulianDates
 		return julianDate + timeCorrectionDays;
 	}
 
-
 	#region Additional Date Formats and Time Scales
 
 	/// <summary>Returns a geocentric Julian Date (GJD) for an already geocentric Julian Date value.</summary>
 	/// <remarks>GJD identifies the origin of the time coordinate; it is not a separate epoch offset from JD.</remarks>
 	/// <param name="geocentricJulianDate">Geocentric Julian Date.</param>
 	/// <returns>The unchanged geocentric Julian Date.</returns>
-	public static double CalculateGeocentricJulianDate(double geocentricJulianDate) => geocentricJulianDate;
+	public static double CalculateGeocentricJulianDate(double geocentricJulianDate)
+	{
+		return geocentricJulianDate;
+	}
 
 	/// <summary>Returns a geocentric Julian Date (GJD) for an already geocentric Julian Date value.</summary>
 	/// <param name="julianDate">Geocentric Julian Date.</param>
 	/// <returns>Geocentric Julian Date.</returns>
-	public static double ConvertJulianDateToGeocentricJulianDate(double julianDate) => julianDate;
+	public static double ConvertJulianDateToGeocentricJulianDate(double julianDate)
+	{
+		return julianDate;
+	}
 
 	/// <summary>Calculates the J2000 date, expressed as days from JD 2451545.0.</summary>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <returns>J2000 date in days.</returns>
-	public static double CalculateJ2000Date(double julianDate) => julianDate - DoubleJ2000DateEpoch;
+	public static double CalculateJ2000Date(double julianDate)
+	{
+		return julianDate - DoubleJ2000DateEpoch;
+	}
 
 	/// <summary>Calculates the Modified Julian Date 2000 (MJD2000).</summary>
 	/// <remarks>MJD2000 is used here as a J2000-based day count: JD - 2451545.0. The name is not universally standardized.</remarks>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <returns>J2000-based day count.</returns>
-	public static double CalculateModifiedJulianDate2000(double julianDate) => julianDate - DoubleJ2000DateEpoch;
+	public static double CalculateModifiedJulianDate2000(double julianDate)
+	{
+		return julianDate - DoubleJ2000DateEpoch;
+	}
 
 	/// <summary>Calculates a normalized Julian Date using a caller-defined reference epoch.</summary>
 	/// <remarks>NJD has no single universally accepted epoch. This method uses the explicitly supplied reference epoch.</remarks>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <param name="referenceEpoch">Reference epoch expressed as a Julian Date.</param>
 	/// <returns>Normalized Julian Date.</returns>
-	public static double CalculateNormalizedJulianDate(double julianDate, double referenceEpoch) => CalculateOffsetJulianDate(julianDate, referenceEpoch);
+	public static double CalculateNormalizedJulianDate(double julianDate, double referenceEpoch)
+	{
+		return CalculateOffsetJulianDate(julianDate: julianDate, referenceEpoch: referenceEpoch);
+	}
 
 	/// <summary>Calculates the fractional part of a Julian Date.</summary>
 	/// <remarks>The returned value is normalized to the range [0, 1), using the Julian Date noon boundary.</remarks>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <returns>Fractional day.</returns>
-	public static double CalculateJulianDayFraction(double julianDate) => julianDate - Math.Floor(julianDate);
+	public static double CalculateJulianDayFraction(double julianDate)
+	{
+		return julianDate - Math.Floor(d: julianDate);
+	}
 
 	/// <summary>Calculates an offset Julian Date using a caller-defined reference epoch.</summary>
 	/// <remarks>This generic form can represent application-specific EJD, OJD, or NJD conventions. Those abbreviations do not have one universally accepted epoch.</remarks>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <param name="referenceEpoch">Reference epoch expressed as a Julian Date.</param>
 	/// <returns>Number of days since the reference epoch.</returns>
-	public static double CalculateOffsetJulianDate(double julianDate, double referenceEpoch) => julianDate - referenceEpoch;
+	public static double CalculateOffsetJulianDate(double julianDate, double referenceEpoch)
+	{
+		return julianDate - referenceEpoch;
+	}
 
 	/// <summary>Calculates a configurable extended or normalized Julian Date.</summary>
 	/// <remarks>Because EJD and NJD are used with differing conventions, the reference epoch must be supplied explicitly.</remarks>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <param name="referenceEpoch">Reference epoch expressed as a Julian Date.</param>
 	/// <returns>Offset Julian Date.</returns>
-	public static double CalculateExtendedJulianDate(double julianDate, double referenceEpoch) => CalculateOffsetJulianDate(julianDate, referenceEpoch);
+	public static double CalculateExtendedJulianDate(double julianDate, double referenceEpoch)
+	{
+		return CalculateOffsetJulianDate(julianDate: julianDate, referenceEpoch: referenceEpoch);
+	}
 
 	/// <summary>Calculates the Julian Century from J2000.0.</summary>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <returns>Julian centuries of 36525 days.</returns>
-	public static double CalculateJulianCentury(double julianDate) => (julianDate - DoubleJ2000EpochJulianDateCoefficient) / 36525.0;
+	public static double CalculateJulianCentury(double julianDate)
+	{
+		return (julianDate - DoubleJ2000EpochJulianDateCoefficient) / 36525.0;
+	}
 
 	/// <summary>Calculates the Julian Millennium from J2000.0.</summary>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <returns>Julian millennia of 365250 days.</returns>
-	public static double CalculateJulianMillennium(double julianDate) => (julianDate - DoubleJ2000EpochJulianDateCoefficient) / 365250.0;
+	public static double CalculateJulianMillennium(double julianDate)
+	{
+		return (julianDate - DoubleJ2000EpochJulianDateCoefficient) / 365250.0;
+	}
 
 	/// <summary>Calculates the decimal year from a Julian Date.</summary>
 	/// <remarks>The calculation uses the proleptic Gregorian calendar and the actual length of the corresponding calendar year.</remarks>
@@ -669,9 +698,9 @@ internal static class JulianDates
 	/// <returns>Decimal Gregorian year.</returns>
 	public static double CalculateDecimalYear(double julianDate)
 	{
-		DateTime date = ConvertJulianDateToCivilCalendar(julianDate);
-		DateTime start = new(date.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-		DateTime end = start.AddYears(1);
+		DateTime date = ConvertJulianDateToCivilCalendar(julianDate: julianDate);
+		DateTime start = new(year: date.Year, month: 1, day: 1, hour: 0, minute: 0, second: 0, kind: DateTimeKind.Utc);
+		DateTime end = start.AddYears(value: 1);
 		double dayOfYear = (date - start).TotalDays;
 		return date.Year + (dayOfYear / (end - start).TotalDays);
 	}
@@ -680,15 +709,18 @@ internal static class JulianDates
 	/// <remarks>This is an alias for the decimal year representation.</remarks>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <returns>Fractional Gregorian year.</returns>
-	public static double CalculateFractionalYear(double julianDate) => CalculateDecimalYear(julianDate);
+	public static double CalculateFractionalYear(double julianDate)
+	{
+		return CalculateDecimalYear(julianDate: julianDate);
+	}
 
 	/// <summary>Calculates the day of year, including the fractional time of day, from a Julian Date.</summary>
 	/// <param name="julianDate">Julian Date.</param>
 	/// <returns>One-based fractional day of year.</returns>
 	public static double CalculateDayOfYear(double julianDate)
 	{
-		DateTime date = ConvertJulianDateToCivilCalendar(julianDate);
-		DateTime start = new(date.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		DateTime date = ConvertJulianDateToCivilCalendar(julianDate: julianDate);
+		DateTime start = new(year: date.Year, month: 1, day: 1, hour: 0, minute: 0, second: 0, kind: DateTimeKind.Utc);
 		return (date - start).TotalDays + 1.0;
 	}
 
@@ -697,48 +729,72 @@ internal static class JulianDates
 	/// <param name="julianDateUtc">UTC Julian Date.</param>
 	/// <param name="taiMinusUtcSeconds">TAI minus UTC, in seconds.</param>
 	/// <returns>TAI Julian Date.</returns>
-	public static double ConvertUtcToTai(double julianDateUtc, double taiMinusUtcSeconds) => julianDateUtc + (taiMinusUtcSeconds / SecondsOfDay);
+	public static double ConvertUtcToTai(double julianDateUtc, double taiMinusUtcSeconds)
+	{
+		return julianDateUtc + (taiMinusUtcSeconds / SecondsOfDay);
+	}
 
 	/// <summary>Converts TAI Julian Date to UTC Julian Date using the supplied TAI-UTC offset.</summary>
 	/// <param name="julianDateTai">TAI Julian Date.</param>
 	/// <param name="taiMinusUtcSeconds">TAI minus UTC, in seconds.</param>
 	/// <returns>UTC Julian Date.</returns>
-	public static double ConvertTaiToUtc(double julianDateTai, double taiMinusUtcSeconds) => julianDateTai - (taiMinusUtcSeconds / SecondsOfDay);
+	public static double ConvertTaiToUtc(double julianDateTai, double taiMinusUtcSeconds)
+	{
+		return julianDateTai - (taiMinusUtcSeconds / SecondsOfDay);
+	}
 
 	/// <summary>Converts TAI Julian Date to Terrestrial Time (TT).</summary>
 	/// <param name="julianDateTai">TAI Julian Date.</param>
 	/// <returns>TT Julian Date.</returns>
-	public static double ConvertTaiToTt(double julianDateTai) => julianDateTai + (DoubleTtTaiOffsetSeconds / SecondsOfDay);
+	public static double ConvertTaiToTt(double julianDateTai)
+	{
+		return julianDateTai + (DoubleTtTaiOffsetSeconds / SecondsOfDay);
+	}
 
 	/// <summary>Converts Terrestrial Time (TT) Julian Date to TAI.</summary>
 	/// <param name="julianDateTt">TT Julian Date.</param>
 	/// <returns>TAI Julian Date.</returns>
-	public static double ConvertTtToTai(double julianDateTt) => julianDateTt - (DoubleTtTaiOffsetSeconds / SecondsOfDay);
+	public static double ConvertTtToTai(double julianDateTt)
+	{
+		return julianDateTt - (DoubleTtTaiOffsetSeconds / SecondsOfDay);
+	}
 
 	/// <summary>Converts UTC Julian Date to TT using the supplied TAI-UTC offset.</summary>
 	/// <param name="julianDateUtc">UTC Julian Date.</param>
 	/// <param name="taiMinusUtcSeconds">TAI minus UTC, in seconds.</param>
 	/// <returns>TT Julian Date.</returns>
-	public static double ConvertUtcToTt(double julianDateUtc, double taiMinusUtcSeconds) => ConvertTaiToTt(ConvertUtcToTai(julianDateUtc, taiMinusUtcSeconds));
+	public static double ConvertUtcToTt(double julianDateUtc, double taiMinusUtcSeconds)
+	{
+		return ConvertTaiToTt(ConvertUtcToTai(julianDateUtc, taiMinusUtcSeconds));
+	}
 
 	/// <summary>Converts TT Julian Date to UTC using the supplied TAI-UTC offset.</summary>
 	/// <param name="julianDateTt">TT Julian Date.</param>
 	/// <param name="taiMinusUtcSeconds">TAI minus UTC, in seconds.</param>
 	/// <returns>UTC Julian Date.</returns>
-	public static double ConvertTtToUtc(double julianDateTt, double taiMinusUtcSeconds) => ConvertTaiToUtc(ConvertTtToTai(julianDateTt), taiMinusUtcSeconds);
+	public static double ConvertTtToUtc(double julianDateTt, double taiMinusUtcSeconds)
+	{
+		return ConvertTaiToUtc(ConvertTtToTai(julianDateTt), taiMinusUtcSeconds);
+	}
 
 	/// <summary>Converts UTC Julian Date to UT1 using DUT1.</summary>
 	/// <remarks>DUT1 is UT1 minus UTC and must be obtained from Earth orientation data for the requested date.</remarks>
 	/// <param name="julianDateUtc">UTC Julian Date.</param>
 	/// <param name="dut1Seconds">UT1 minus UTC, in seconds.</param>
 	/// <returns>UT1 Julian Date.</returns>
-	public static double ConvertUtcToUt1(double julianDateUtc, double dut1Seconds) => julianDateUtc + (dut1Seconds / SecondsOfDay);
+	public static double ConvertUtcToUt1(double julianDateUtc, double dut1Seconds)
+	{
+		return julianDateUtc + (dut1Seconds / SecondsOfDay);
+	}
 
 	/// <summary>Converts UT1 Julian Date to UTC using DUT1.</summary>
 	/// <param name="julianDateUt1">UT1 Julian Date.</param>
 	/// <param name="dut1Seconds">UT1 minus UTC, in seconds.</param>
 	/// <returns>UTC Julian Date.</returns>
-	public static double ConvertUt1ToUtc(double julianDateUt1, double dut1Seconds) => julianDateUt1 - (dut1Seconds / SecondsOfDay);
+	public static double ConvertUt1ToUtc(double julianDateUt1, double dut1Seconds)
+	{
+		return julianDateUt1 - (dut1Seconds / SecondsOfDay);
+	}
 
 	/// <summary>Approximates UT2 from UT1 using the conventional seasonal correction.</summary>
 	/// <remarks>UT2 is a historical smoothed form of UT1. This low-order periodic approximation is not a substitute for official historical UT2 data.</remarks>
@@ -820,12 +876,18 @@ internal static class JulianDates
 	/// <summary>Converts GPS Julian Date to TAI Julian Date.</summary>
 	/// <param name="julianDateGps">GPS Julian Date.</param>
 	/// <returns>TAI Julian Date.</returns>
-	public static double ConvertGpsToTai(double julianDateGps) => julianDateGps + (DoubleGpsTaiOffsetSeconds / SecondsOfDay);
+	public static double ConvertGpsToTai(double julianDateGps)
+	{
+		return julianDateGps + (DoubleGpsTaiOffsetSeconds / SecondsOfDay);
+	}
 
 	/// <summary>Converts TAI Julian Date to GPS Julian Date.</summary>
 	/// <param name="julianDateTai">TAI Julian Date.</param>
 	/// <returns>GPS Julian Date.</returns>
-	public static double ConvertTaiToGps(double julianDateTai) => julianDateTai - (DoubleGpsTaiOffsetSeconds / SecondsOfDay);
+	public static double ConvertTaiToGps(double julianDateTai)
+	{
+		return julianDateTai - (DoubleGpsTaiOffsetSeconds / SecondsOfDay);
+	}
 
 	/// <summary>Calculates the Barycentric Julian Date (BJD) using a geometric light-time correction.</summary>
 	/// <remarks>The observer position relative to the solar-system barycenter and the target unit direction must use the same inertial frame and AU units. This geometric correction does not include Shapiro delay or other relativistic terms.</remarks>
@@ -853,7 +915,10 @@ internal static class JulianDates
 	/// <param name="targetUnitY">Target unit-vector Y component.</param>
 	/// <param name="targetUnitZ">Target unit-vector Z component.</param>
 	/// <returns>BJD(UTC).</returns>
-	public static double CalculateBarycentricJulianDateUtc(double julianDateUtc, double observerBarycentricX, double observerBarycentricY, double observerBarycentricZ, double targetUnitX, double targetUnitY, double targetUnitZ) => CalculateBarycentricJulianDate(julianDateUtc, observerBarycentricX, observerBarycentricY, observerBarycentricZ, targetUnitX, targetUnitY, targetUnitZ);
+	public static double CalculateBarycentricJulianDateUtc(double julianDateUtc, double observerBarycentricX, double observerBarycentricY, double observerBarycentricZ, double targetUnitX, double targetUnitY, double targetUnitZ)
+	{
+		return CalculateBarycentricJulianDate(julianDate: julianDateUtc, observerBarycentricX: observerBarycentricX, observerBarycentricY: observerBarycentricY, observerBarycentricZ: observerBarycentricZ, targetUnitX: targetUnitX, targetUnitY: targetUnitY, targetUnitZ: targetUnitZ);
+	}
 
 	/// <summary>Calculates BJD(TT) using a geometric barycentric light-time correction.</summary>
 	/// <remarks>The input must already be expressed in TT. The geometric correction does not include Shapiro delay.</remarks>
@@ -865,7 +930,10 @@ internal static class JulianDates
 	/// <param name="targetUnitY">Target unit-vector Y component.</param>
 	/// <param name="targetUnitZ">Target unit-vector Z component.</param>
 	/// <returns>BJD(TT).</returns>
-	public static double CalculateBarycentricJulianDateTt(double julianDateTt, double observerBarycentricX, double observerBarycentricY, double observerBarycentricZ, double targetUnitX, double targetUnitY, double targetUnitZ) => CalculateBarycentricJulianDate(julianDateTt, observerBarycentricX, observerBarycentricY, observerBarycentricZ, targetUnitX, targetUnitY, targetUnitZ);
+	public static double CalculateBarycentricJulianDateTt(double julianDateTt, double observerBarycentricX, double observerBarycentricY, double observerBarycentricZ, double targetUnitX, double targetUnitY, double targetUnitZ)
+	{
+		return CalculateBarycentricJulianDate(julianDate: julianDateTt, observerBarycentricX: observerBarycentricX, observerBarycentricY: observerBarycentricY, observerBarycentricZ: observerBarycentricZ, targetUnitX: targetUnitX, targetUnitY: targetUnitY, targetUnitZ: targetUnitZ);
+	}
 
 	/// <summary>Calculates BJD(TDB) using a geometric barycentric light-time correction.</summary>
 	/// <remarks>The input must already be expressed in TDB. The geometric correction does not include Shapiro delay.</remarks>
@@ -877,7 +945,10 @@ internal static class JulianDates
 	/// <param name="targetUnitY">Target unit-vector Y component.</param>
 	/// <param name="targetUnitZ">Target unit-vector Z component.</param>
 	/// <returns>BJD(TDB).</returns>
-	public static double CalculateBarycentricJulianDateTdb(double julianDateTdb, double observerBarycentricX, double observerBarycentricY, double observerBarycentricZ, double targetUnitX, double targetUnitY, double targetUnitZ) => CalculateBarycentricJulianDate(julianDateTdb, observerBarycentricX, observerBarycentricY, observerBarycentricZ, targetUnitX, targetUnitY, targetUnitZ);
+	public static double CalculateBarycentricJulianDateTdb(double julianDateTdb, double observerBarycentricX, double observerBarycentricY, double observerBarycentricZ, double targetUnitX, double targetUnitY, double targetUnitZ)
+	{
+		return CalculateBarycentricJulianDate(julianDate: julianDateTdb, observerBarycentricX: observerBarycentricX, observerBarycentricY: observerBarycentricY, observerBarycentricZ: observerBarycentricZ, targetUnitX: targetUnitX, targetUnitY: targetUnitY, targetUnitZ: targetUnitZ);
+	}
 
 	/// <summary>Calculates HJD(UTC) using a geometric heliocentric light-time correction.</summary>
 	/// <param name="julianDateUtc">UTC Julian Date.</param>
@@ -888,7 +959,10 @@ internal static class JulianDates
 	/// <param name="targetUnitY">Target unit-vector Y component.</param>
 	/// <param name="targetUnitZ">Target unit-vector Z component.</param>
 	/// <returns>HJD(UTC).</returns>
-	public static double CalculateHeliocentricJulianDateUtc(double julianDateUtc, double earthHeliocentricX, double earthHeliocentricY, double earthHeliocentricZ, double targetUnitX, double targetUnitY, double targetUnitZ) => CalculateHeliocentricJulianDate(julianDateUtc, earthHeliocentricX, earthHeliocentricY, earthHeliocentricZ, targetUnitX, targetUnitY, targetUnitZ);
+	public static double CalculateHeliocentricJulianDateUtc(double julianDateUtc, double earthHeliocentricX, double earthHeliocentricY, double earthHeliocentricZ, double targetUnitX, double targetUnitY, double targetUnitZ)
+	{
+		return CalculateHeliocentricJulianDate(julianDate: julianDateUtc, earthVectorX: earthHeliocentricX, earthVectorY: earthHeliocentricY, earthVectorZ: earthHeliocentricZ, targetUnitX: targetUnitX, targetUnitY: targetUnitY, targetUnitZ: targetUnitZ);
+	}
 
 	/// <summary>Calculates HJD(TT) using a geometric heliocentric light-time correction.</summary>
 	/// <param name="julianDateTt">TT Julian Date.</param>
@@ -899,7 +973,10 @@ internal static class JulianDates
 	/// <param name="targetUnitY">Target unit-vector Y component.</param>
 	/// <param name="targetUnitZ">Target unit-vector Z component.</param>
 	/// <returns>HJD(TT).</returns>
-	public static double CalculateHeliocentricJulianDateTt(double julianDateTt, double earthHeliocentricX, double earthHeliocentricY, double earthHeliocentricZ, double targetUnitX, double targetUnitY, double targetUnitZ) => CalculateHeliocentricJulianDate(julianDateTt, earthHeliocentricX, earthHeliocentricY, earthHeliocentricZ, targetUnitX, targetUnitY, targetUnitZ);
+	public static double CalculateHeliocentricJulianDateTt(double julianDateTt, double earthHeliocentricX, double earthHeliocentricY, double earthHeliocentricZ, double targetUnitX, double targetUnitY, double targetUnitZ)
+	{
+		return CalculateHeliocentricJulianDate(julianDate: julianDateTt, earthVectorX: earthHeliocentricX, earthVectorY: earthHeliocentricY, earthVectorZ: earthHeliocentricZ, targetUnitX: targetUnitX, targetUnitY: targetUnitY, targetUnitZ: targetUnitZ);
+	}
 
 	/// <summary>Calculates HJD(TDB) using a geometric heliocentric light-time correction.</summary>
 	/// <param name="julianDateTdb">TDB Julian Date.</param>
@@ -910,7 +987,10 @@ internal static class JulianDates
 	/// <param name="targetUnitY">Target unit-vector Y component.</param>
 	/// <param name="targetUnitZ">Target unit-vector Z component.</param>
 	/// <returns>HJD(TDB).</returns>
-	public static double CalculateHeliocentricJulianDateTdb(double julianDateTdb, double earthHeliocentricX, double earthHeliocentricY, double earthHeliocentricZ, double targetUnitX, double targetUnitY, double targetUnitZ) => CalculateHeliocentricJulianDate(julianDateTdb, earthHeliocentricX, earthHeliocentricY, earthHeliocentricZ, targetUnitX, targetUnitY, targetUnitZ);
+	public static double CalculateHeliocentricJulianDateTdb(double julianDateTdb, double earthHeliocentricX, double earthHeliocentricY, double earthHeliocentricZ, double targetUnitX, double targetUnitY, double targetUnitZ)
+	{
+		return CalculateHeliocentricJulianDate(julianDate: julianDateTdb, earthVectorX: earthHeliocentricX, earthVectorY: earthHeliocentricY, earthVectorZ: earthHeliocentricZ, targetUnitX: targetUnitX, targetUnitY: targetUnitY, targetUnitZ: targetUnitZ);
+	}
 
 	/// <summary>Calculates a mission-specific planetary sol number.</summary>
 	/// <remarks>Mission sol numbering is not globally standardized. Supply the mission's documented epoch and the adopted sol length.</remarks>
@@ -918,19 +998,28 @@ internal static class JulianDates
 	/// <param name="missionEpochJulianDate">Julian Date of mission sol zero.</param>
 	/// <param name="solLengthDays">Length of one local planetary sol in Earth days.</param>
 	/// <returns>Zero-based fractional mission sol number.</returns>
-	public static double CalculatePlanetarySolDate(double julianDate, double missionEpochJulianDate, double solLengthDays) => (julianDate - missionEpochJulianDate) / solLengthDays;
+	public static double CalculatePlanetarySolDate(double julianDate, double missionEpochJulianDate, double solLengthDays)
+	{
+		return (julianDate - missionEpochJulianDate) / solLengthDays;
+	}
 
 	/// <summary>Calculates a zero-based mission sol number from a planetary sol date.</summary>
 	/// <param name="planetarySolDate">Fractional planetary sol date.</param>
 	/// <returns>Integer sol number.</returns>
-	public static long CalculatePlanetarySolNumber(double planetarySolDate) => (long)Math.Floor(planetarySolDate);
+	public static long CalculatePlanetarySolNumber(double planetarySolDate)
+	{
+		return (long)Math.Floor(d: planetarySolDate);
+	}
 
 	/// <summary>Calculates a mission-specific Mars Sol Number (MSN).</summary>
 	/// <remarks>MSN is mission-dependent and must not be confused with the continuous Mars Sol Date (MSD).</remarks>
 	/// <param name="julianDate">Input Julian Date.</param>
 	/// <param name="missionEpochJulianDate">Julian Date of mission sol zero.</param>
 	/// <returns>Zero-based integer mission sol number.</returns>
-	public static long CalculateMarsSolNumber(double julianDate, double missionEpochJulianDate) => (long)Math.Floor((julianDate - missionEpochJulianDate) / DoubleMarsSolLengthDays);
+	public static long CalculateMarsSolNumber(double julianDate, double missionEpochJulianDate)
+	{
+		return (long)Math.Floor(d: (julianDate - missionEpochJulianDate) / DoubleMarsSolLengthDays);
+	}
 
 	/// <summary>Calculates Mars Coordinated Time (MTC) in decimal Martian hours.</summary>
 	/// <param name="marsSolDate">Mars Sol Date.</param>
